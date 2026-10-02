@@ -1,0 +1,28 @@
+server:
+  port: 8080
+  # 在 nginx 後面時，信任 X-Forwarded-* header，讓 request.getScheme() 等取得原始的 https / host
+  forward-headers-strategy: native
+
+spring:
+  application:
+    name: splitmate-backend
+  datasource:
+    # 機敏設定一律由環境變數注入（docker compose 從 .env 帶入），不寫死在程式碼
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/splitmate}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    # 關閉 Open Session in View：避免在 Controller / JSON 序列化時才觸發 lazy loading 查詢 DB
+    open-in-view: false
+    hibernate:
+      # Schema 一律由 Flyway 管理，Hibernate 只負責驗證 Entity 與資料表是否一致
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jackson:
+    time-zone: UTC

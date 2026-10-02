@@ -1,0 +1,55 @@
+# 正式環境 HTTPS 設定範例（Let's Encrypt / certbot）
+# 使用方式（完整步驟見 README「HTTPS 設定」）：
+#   1. 把下方所有 splitmate.example.com 換成你的網域
+#   2. 先用 HTTP 設定 + webroot 模式取得憑證
+#   3. 再把本檔掛載成 /etc/nginx/conf.d/splitmate.conf 取代 HTTP 版本
+#
+# 本檔需要以下 volume（由 docker-compose.prod.yml 提供）：
+#   /etc/letsencrypt   ← certbot 產生的憑證
+#   /var/www/certbot   ← certbot webroot 驗證用的暫存檔
+
+# ------------------------------------------------------------
+# HTTP（80）：只做兩件事——讓 certbot 驗證網域、其餘一律轉到 HTTPS
+# ------------------------------------------------------------
+server {
+    # 只監聽 IPv4：容器內 IPv6 常被停用，寫 listen [::]:80 會讓 nginx 啟動失敗（Address family not supported）；
+    # 主機對外的 IPv6 由 Docker port mapping 處理，容器內不需要另外監聽
+    listen 80;
+    server_name splitmate.example.com;
+
+    # 為什麼需要：Let's Encrypt 以 HTTP-01 驗證網域所有權時，會來抓
+    # http://<網域>/.well-known/acme-challenge/<token>，這個路徑必須能用「HTTP」存取，
+    # 不能被下面的 301 轉走，否則憑證「續期」會失敗（首次申請成功、90 天後才爆，最難查）
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    # 其他所有請求永久轉到 HTTPS，避免使用者用明文傳送 JWT / 密碼
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+# ------------------------------------------------------------
+# HTTPS（443）
+# ------------------------------------------------------------
+server {
+    # nginx 1.25.1 起 http2 改為獨立指令；舊版寫法 "listen 443 ssl http2" 會出現 deprecated 警告
+    listen 443 ssl;
+    http2 on;
+    server_name splitmate.example.com;
+
+    # certbot 產生的憑證路徑；fullchain.pem 包含中繼憑證，只用 cert.pem 會導致部分裝置驗證失敗
+    ssl_certificate     /etc/letsencrypt/live/splitmate.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/splitmate.example.com/privkey.pem;
+
+    # 只允許目前仍被視為安全的 TLS 版本（TLS 1.0 / 1.1 已被主流瀏覽器淘汰）
+    ssl_protocols TLSv1.2 TLSv1.3;
+    # 重用 TLS session，減少重複握手的 CPU 與延遲
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 1d;
+
+    # 與 HTTP 版共用同一份 location 設定（靜態檔、快取、/api 反向代理）
+    # 因為這裡的 $scheme 是 https，snippet 裡的 X-Forwarded-Proto 會自動帶 https
+    include /etc/nginx/snippets/splitmate-locations.conf;
+}
