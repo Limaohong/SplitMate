@@ -26,3 +26,9 @@ spring:
     locations: classpath:db/migration
   jackson:
     time-zone: UTC
+
+app:
+  jwt:
+    # 由 .env 的 JWT_SECRET 注入，至少 32 bytes；不提供預設值，缺少時啟動即失敗（fail fast）
+    secret: ${JWT_SECRET}
+    access-token-ttl: ${JWT_ACCESS_TOKEN_TTL:2h}

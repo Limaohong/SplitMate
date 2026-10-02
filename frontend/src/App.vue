@@ -1,11 +1,24 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+async function logout(): Promise<void> {
+  authStore.logout()
+  await router.push({ name: 'login' })
+}
 </script>
 
 <template>
   <el-container class="app-layout">
     <el-header class="app-header">
       <RouterLink to="/" class="app-title">SplitMate</RouterLink>
+      <div v-if="authStore.currentUser" class="user-menu">
+        <span>{{ authStore.currentUser.displayName }}</span>
+        <el-button size="small" @click="logout">登出</el-button>
+      </div>
     </el-header>
     <el-main>
       <RouterView />
@@ -29,6 +42,7 @@ body {
 .app-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   background-color: #ffffff;
   border-bottom: 1px solid #e4e7ed;
 }
@@ -38,5 +52,11 @@ body {
   font-weight: 600;
   color: #409eff;
   text-decoration: none;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 </style>
