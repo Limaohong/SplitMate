@@ -2,6 +2,7 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { login as loginApi, register as registerApi } from '@/api/auth'
 import { getCurrentUser } from '@/api/user'
+import { useGroupStore } from '@/stores/group'
 import type { AuthResponse, LoginRequest, RegisterRequest, UserProfile } from '@/types/auth'
 import { clearStoredAccessToken, getStoredAccessToken, saveAccessToken } from '@/utils/tokenStorage'
 
@@ -25,11 +26,12 @@ export const useAuthStore = defineStore('auth', () => {
     currentUser.value = await getCurrentUser()
   }
 
-  /** JWT 無狀態，登出只需清掉前端保存的 token */
+  /** JWT 無狀態，登出只需清掉前端保存的 token，並清除其他與使用者相關的 store */
   function logout(): void {
     clearStoredAccessToken()
     accessToken.value = null
     currentUser.value = null
+    useGroupStore().clearGroups()
   }
 
   function applyAuthResponse(authResponse: AuthResponse): void {

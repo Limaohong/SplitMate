@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { START_LOCATION } from 'vue-router'
 import ElementPlus, { ElMessage } from 'element-plus'
+import zhTw from 'element-plus/es/locale/lang/zh-tw'
 import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
@@ -12,7 +13,8 @@ const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
-app.use(ElementPlus)
+// 設定元件內建文字（返回、無資料、確定 / 取消等）為繁體中文，預設是英文
+app.use(ElementPlus, { locale: zhTw })
 
 const authStore = useAuthStore()
 

@@ -6,13 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.splitmate.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
 
 class HealthControllerIntegrationTest extends AbstractIntegrationTest {
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @Test
     void shouldReturnOkStatusWithoutLogin() throws Exception {

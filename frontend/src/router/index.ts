@@ -11,6 +11,20 @@ const router = createRouter({
       component: () => import('@/views/HomeView.vue'),
     },
     {
+      // (\d+) 限制只能是數字，/groups/abc 會落到 404 頁而不是送出無效的 API 請求
+      path: '/groups/:groupId(\\d+)',
+      name: 'group-detail',
+      component: () => import('@/views/GroupDetailView.vue'),
+      props: (route) => ({ groupId: Number(route.params.groupId) }),
+    },
+    {
+      // 邀請連結。需要登入：未登入者會先被導向登入 / 註冊，完成後依 redirect 回到這裡
+      path: '/join/:inviteCode',
+      name: 'join-group',
+      component: () => import('@/views/JoinGroupView.vue'),
+      props: true,
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/views/LoginView.vue'),
