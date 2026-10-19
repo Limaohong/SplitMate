@@ -2,6 +2,7 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { login as loginApi, register as registerApi } from '@/api/auth'
 import { getCurrentUser } from '@/api/user'
+import { useExpenseStore } from '@/stores/expense'
 import { useGroupStore } from '@/stores/group'
 import type { AuthResponse, LoginRequest, RegisterRequest, UserProfile } from '@/types/auth'
 import { clearStoredAccessToken, getStoredAccessToken, saveAccessToken } from '@/utils/tokenStorage'
@@ -32,6 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken.value = null
     currentUser.value = null
     useGroupStore().clearGroups()
+    useExpenseStore().clearExpenses()
   }
 
   function applyAuthResponse(authResponse: AuthResponse): void {

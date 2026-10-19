@@ -17,6 +17,8 @@ public enum ErrorCode {
     GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "找不到群組，或你不是該群組的成員"),
     INVITATION_NOT_FOUND(HttpStatus.NOT_FOUND, "邀請連結無效"),
     EMAIL_ALREADY_REGISTERED(HttpStatus.CONFLICT, "此電子郵件已被註冊"),
+    // 分攤明細加總與支出金額不一致，代表新增支出的邏輯有 bug（練習時常見），結算無法進行
+    SETTLEMENT_UNBALANCED(HttpStatus.INTERNAL_SERVER_ERROR, "帳目不平衡：所有成員淨額加總不為 0，請檢查支出的分攤金額"),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "系統發生錯誤，請稍後再試");
 
     private final HttpStatus httpStatus;

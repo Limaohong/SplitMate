@@ -57,3 +57,16 @@ docker compose up -d --build
 - 健康檢查：http://localhost/api/health → `{"code":"OK","message":"success","data":{"status":"OK"}}`
 
 若本機 80 port 被占用，把 `.env` 的 `NGINX_HTTP_PORT` 改成 8000 等。
+
+## 本機範例資料（選用）
+
+新增支出是練習項目，完成前可以先匯入範例資料來檢查支出清單與結算畫面：
+
+```bash
+docker compose cp scripts/seed-demo-data.sql postgres:/tmp/seed-demo-data.sql
+docker compose exec postgres psql -U splitmate -d splitmate -f /tmp/seed-demo-data.sql
+```
+
+- 範例帳號（密碼皆為 `password123`）：`alice@demo.splitmate.local`、`bob@demo.splitmate.local`、`carol@demo.splitmate.local`
+- 也可用自己的帳號開啟 http://localhost/join/demo-tokyo-trip 或 http://localhost/join/demo-roommates 加入範例群組
+- **只用於本機**：這些帳號的密碼是公開的，請勿在正式環境執行

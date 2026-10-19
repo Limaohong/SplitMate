@@ -2,6 +2,8 @@
 import { computed, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getErrorMessage } from '@/api/http'
+import ExpenseList from '@/components/ExpenseList.vue'
+import SettlementPanel from '@/components/SettlementPanel.vue'
 import { CURRENCY_LABELS } from '@/constants/currency'
 import { useGroupStore } from '@/stores/group'
 
@@ -11,8 +13,11 @@ const props = defineProps<{
 
 const groupStore = useGroupStore()
 
+type GroupTabName = 'expenses' | 'settlement' | 'members'
+
 const isLoading = ref(true)
 const loadErrorMessage = ref('')
+const activeTabName = ref<GroupTabName>('expenses')
 
 const inviteLink = computed(() => {
   const inviteCode = groupStore.currentGroup?.inviteCode
@@ -77,25 +82,38 @@ watch(() => props.groupId, loadGroupDetail, { immediate: true })
     </el-result>
 
     <div v-else v-loading="isLoading" class="section-list">
-      <template v-if="groupStore.currentGroup">
-        <el-card>
-          <template #header>邀請朋友加入</template>
-          <p class="hint-text">把連結傳給朋友，對方登入後即可加入此群組。持有連結的人都能加入，請只分享給信任的人。</p>
-          <div class="invite-row">
-            <el-input :model-value="inviteLink" readonly @focus="selectAllText" />
-            <el-button type="primary" @click="copyInviteLink">複製</el-button>
-          </div>
-        </el-card>
+      <el-tabs v-if="groupStore.currentGroup" v-model="activeTabName">
+        <el-tab-pane label="支出" name="expenses">
+          <ExpenseList :group-id="groupId" :currency-code="groupStore.currentGroup.currencyCode" />
+        </el-tab-pane>
 
-        <el-card>
-          <template #header>成員（{{ groupStore.currentGroup.members.length }}）</template>
-          <div class="member-list">
-            <el-tag v-for="member in groupStore.currentGroup.members" :key="member.userId" type="info">
-              {{ member.displayName }}
-            </el-tag>
+        <!-- lazy：第一次切到「結算」才發出請求 -->
+        <el-tab-pane label="結算" name="settlement" lazy>
+          <SettlementPanel :group-id="groupId" />
+        </el-tab-pane>
+
+        <el-tab-pane :label="`成員（${groupStore.currentGroup.members.length}）`" name="members">
+          <div class="section-list">
+            <el-card shadow="never">
+              <template #header>邀請朋友加入</template>
+              <p class="hint-text">把連結傳給朋友，對方登入後即可加入此群組。持有連結的人都能加入，請只分享給信任的人。</p>
+              <div class="invite-row">
+                <el-input :model-value="inviteLink" readonly @focus="selectAllText" />
+                <el-button type="primary" @click="copyInviteLink">複製</el-button>
+              </div>
+            </el-card>
+
+            <el-card shadow="never">
+              <template #header>成員</template>
+              <div class="member-list">
+                <el-tag v-for="member in groupStore.currentGroup.members" :key="member.userId" type="info">
+                  {{ member.displayName }}
+                </el-tag>
+              </div>
+            </el-card>
           </div>
-        </el-card>
-      </template>
+        </el-tab-pane>
+      </el-tabs>
     </div>
   </div>
 </template>

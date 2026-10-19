@@ -3,6 +3,7 @@ package com.splitmate;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.splitmate.dto.RegisterRequest;
 import java.util.UUID;
@@ -48,12 +49,22 @@ public abstract class AbstractIntegrationTest {
 
     /** 註冊一位新使用者並回傳 Authorization header 值（"Bearer xxx"） */
     protected String registerUserAndGetAuthorization(String displayName) throws Exception {
+        return registerUser(displayName).authorization();
+    }
+
+    protected RegisteredUser registerUser(String displayName) throws Exception {
         RegisterRequest registerRequest = new RegisterRequest(createUniqueEmail(), VALID_PASSWORD, displayName);
         String responseBody = mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
-        return "Bearer " + objectMapper.readTree(responseBody).path("data").path("accessToken").asText();
+        JsonNode authNode = objectMapper.readTree(responseBody).path("data");
+        return new RegisteredUser("Bearer " + authNode.path("accessToken").asText(),
+                authNode.path("user").path("id").asLong());
+    }
+
+    /** 測試用的已註冊使用者：authorization 為 "Bearer xxx" */
+    protected record RegisteredUser(String authorization, Long userId) {
     }
 }
