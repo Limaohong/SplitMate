@@ -22,3 +22,6 @@ frontend/*.tsbuildinfo
 .vscode/
 *.iml
 .DS_Store
+
+# 個人練習手冊與 demo（只放在自己電腦，不進版控）
+practice-guide/
