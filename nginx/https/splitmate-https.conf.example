@@ -1,8 +1,9 @@
 # 正式環境 HTTPS 設定範例（Let's Encrypt / certbot）
 # 使用方式（完整步驟見 README「HTTPS 設定」）：
-#   1. 把下方所有 splitmate.example.com 換成你的網域
-#   2. 先用 HTTP 設定 + webroot 模式取得憑證
-#   3. 再把本檔掛載成 /etc/nginx/conf.d/splitmate.conf 取代 HTTP 版本
+#   1. 複製成 nginx/https/splitmate-https.conf（已列入 .gitignore），把所有 splitmate.example.com 換成你的網域
+#   2. 先用 HTTP 設定 + certbot webroot 模式取得憑證
+#   3. 在 .env 設定 NGINX_SITE_CONF=./nginx/https/splitmate-https.conf，
+#      docker-compose.prod.yml 會把本檔掛載成 /etc/nginx/conf.d/splitmate.conf，取代 HTTP 版本
 #
 # 本檔需要以下 volume（由 docker-compose.prod.yml 提供）：
 #   /etc/letsencrypt   ← certbot 產生的憑證

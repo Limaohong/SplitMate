@@ -1,8 +1,14 @@
 # 機敏設定：真正的 .env 絕對不能進版控
 .env
 
+# 正式環境：Let's Encrypt 憑證與含網域的 HTTPS 設定（每台主機不同，且憑證私鑰不能進版控）
+certbot/
+nginx/https/splitmate-https.conf
+
 # Backend
 backend/target/
+# 開發模式（mvnw spring-boot:run）時收據的預設存放目錄
+backend/data/
 *.class
 *.log
 

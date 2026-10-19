@@ -18,11 +18,13 @@ import org.testcontainers.containers.PostgreSQLContainer;
 /**
  * 整合測試共用設定：啟動一個真正的 PostgreSQL 容器（需要本機 Docker 正在執行）。
  * static 容器在同一個 JVM 內只啟動一次，所有繼承的測試類別共用，並搭配 Spring 測試 context 快取。
+ * RANDOM_PORT：啟動真正的 HTTP server，WebSocket 測試才能連線；MockMvc 測試同樣可用。
  */
-@SpringBootTest(properties = {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
         "app.jwt.secret=integration-test-secret-key-at-least-32-bytes",
         "DB_USERNAME=unused-overridden-by-service-connection",
-        "DB_PASSWORD=unused-overridden-by-service-connection"
+        "DB_PASSWORD=unused-overridden-by-service-connection",
+        "app.receipt.storage-directory=target/test-receipts"
 })
 @AutoConfigureMockMvc
 public abstract class AbstractIntegrationTest {

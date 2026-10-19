@@ -5,7 +5,6 @@ import com.splitmate.exception.SecurityExceptionHandler;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,7 +21,6 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableConfigurationProperties(JwtProperties.class)
 public class SecurityConfig {
 
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
@@ -38,6 +36,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
+                        // 瀏覽器原生 WebSocket 無法在握手請求帶 Authorization header，
+                        // 因此握手放行，改在 STOMP CONNECT 時驗證 JWT（見 StompAuthChannelInterceptor）
+                        .requestMatchers("/ws").permitAll()
                         // Spring Boot 發生例外時會 forward 到 /error，若不放行，原本的錯誤會被蓋成 401
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())

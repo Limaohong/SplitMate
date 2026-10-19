@@ -35,6 +35,10 @@ services:
       # 必填，缺少時 compose 直接報錯，而不是讓後端帶著空 secret 啟動
       JWT_SECRET: ${JWT_SECRET:?請在 .env 設定 JWT_SECRET}
       JWT_ACCESS_TOKEN_TTL: ${JWT_ACCESS_TOKEN_TTL:-2h}
+      RECEIPT_STORAGE_DIR: /app/data/receipts
+    volumes:
+      # 收據圖片存在具名 volume，重建 backend 容器時不會遺失
+      - receipt-data:/app/data/receipts
     depends_on:
       postgres:
         condition: service_healthy
@@ -53,3 +57,4 @@ services:
 
 volumes:
   postgres-data:
+  receipt-data:

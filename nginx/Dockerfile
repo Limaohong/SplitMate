@@ -15,4 +15,5 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx/conf.d/ /etc/nginx/conf.d/
 COPY nginx/snippets/ /etc/nginx/snippets/
 COPY --from=frontend-build /app/dist /usr/share/nginx/html
-EXPOSE 80
+# 443 只有在正式環境套用 HTTPS 設定時才會使用
+EXPOSE 80 443

@@ -20,3 +20,23 @@ export interface Expense {
   hasReceipt: boolean
   createdAt: string
 }
+
+/** 對應後端 ExpenseShareRequest（練習項目） */
+export interface ExpenseShareRequest {
+  userId: number
+  shareAmount: number
+}
+
+/** 對應後端 CreateExpenseRequest（練習項目），規格見 PRACTICE.md */
+export interface CreateExpenseRequest {
+  amount: number
+  description: string
+  payerUserId: number
+  shares: ExpenseShareRequest[]
+}
+
+/** 對應後端 ExpenseCreatedMessage：WebSocket 推播的訊息內容（練習項目） */
+export interface ExpenseCreatedMessage {
+  groupId: number
+  expense: Expense
+}

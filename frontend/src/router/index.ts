@@ -18,6 +18,13 @@ const router = createRouter({
       props: (route) => ({ groupId: Number(route.params.groupId) }),
     },
     {
+      // 新增支出（練習項目）
+      path: '/groups/:groupId(\\d+)/expenses/new',
+      name: 'expense-create',
+      component: () => import('@/views/CreateExpenseView.vue'),
+      props: (route) => ({ groupId: Number(route.params.groupId) }),
+    },
+    {
       // 邀請連結。需要登入：未登入者會先被導向登入 / 註冊，完成後依 redirect 回到這裡
       path: '/join/:inviteCode',
       name: 'join-group',

@@ -26,9 +26,17 @@ spring:
     locations: classpath:db/migration
   jackson:
     time-zone: UTC
+  servlet:
+    multipart:
+      # Spring 預設單檔上限只有 1MB；收據照片常超過，因此放寬到 5MB（nginx 那一層的上限是練習項目）
+      max-file-size: 5MB
+      max-request-size: 6MB
 
 app:
   jwt:
     # 由 .env 的 JWT_SECRET 注入，至少 32 bytes；不提供預設值，缺少時啟動即失敗（fail fast）
     secret: ${JWT_SECRET}
     access-token-ttl: ${JWT_ACCESS_TOKEN_TTL:2h}
+  receipt:
+    # 收據圖片存放目錄；docker compose 會把具名 volume 掛在這裡，容器重建後檔案仍保留
+    storage-directory: ${RECEIPT_STORAGE_DIR:./data/receipts}

@@ -38,6 +38,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+        <!-- WebSocket + STOMP：支出建立後即時通知群組成員 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
         <!-- 使用 Spring Security 官方的 JWT 支援（Nimbus），不需自寫 JWT Filter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

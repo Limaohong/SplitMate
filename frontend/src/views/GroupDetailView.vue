@@ -58,6 +58,8 @@ function selectAllText(event: FocusEvent): void {
   ;(event.target as HTMLInputElement).select()
 }
 
+// TODO 練習項目（前端 4：即時刷新）：在這裡呼叫 useExpenseSubscription(() => props.groupId)
+
 // 同一個元件在不同群組間切換時（/groups/1 → /groups/2）不會重新建立，必須監聽 props 變化
 watch(() => props.groupId, loadGroupDetail, { immediate: true })
 </script>
@@ -84,6 +86,11 @@ watch(() => props.groupId, loadGroupDetail, { immediate: true })
     <div v-else v-loading="isLoading" class="section-list">
       <el-tabs v-if="groupStore.currentGroup" v-model="activeTabName">
         <el-tab-pane label="支出" name="expenses">
+          <div class="tab-toolbar">
+            <el-button type="primary" @click="$router.push({ name: 'expense-create', params: { groupId } })">
+              新增支出
+            </el-button>
+          </div>
           <ExpenseList :group-id="groupId" :currency-code="groupStore.currentGroup.currencyCode" />
         </el-tab-pane>
 
@@ -136,6 +143,12 @@ watch(() => props.groupId, loadGroupDetail, { immediate: true })
   gap: 16px;
   margin-top: 16px;
   min-height: 120px;
+}
+
+.tab-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
 }
 
 .hint-text {

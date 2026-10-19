@@ -11,7 +11,11 @@ RUN mvn -B -q package -DskipTests
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 # 以非 root 使用者執行，降低容器被入侵時的權限
-RUN addgroup -S splitmate && adduser -S splitmate -G splitmate
+# 收據目錄要在切換使用者「之前」建立並交給 splitmate：具名 volume 第一次掛載時會沿用映像內目錄的擁有者，
+# 若目錄不存在，Docker 會以 root 建立，非 root 的應用程式就會因為沒有寫入權限而存檔失敗
+RUN addgroup -S splitmate && adduser -S splitmate -G splitmate \
+    && mkdir -p /app/data/receipts \
+    && chown -R splitmate:splitmate /app/data
 USER splitmate
 COPY --from=build /app/target/splitmate-backend-*.jar app.jar
 EXPOSE 8080

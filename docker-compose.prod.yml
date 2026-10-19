@@ -1,0 +1,26 @@
+# 正式環境（VPS）覆寫設定，需與 docker-compose.yml 一起使用：
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# 完整步驟見 README「VPS 部署」與「HTTPS 設定」。
+
+services:
+  nginx:
+    ports:
+      # 與 docker-compose.yml 的 80 合併（ports 清單會疊加，不會覆蓋）
+      - "443:443"
+    volumes:
+      # 依 .env 的 NGINX_SITE_CONF 決定使用 HTTP 或 HTTPS 設定，覆蓋映像內的 splitmate.conf；
+      # 拿到憑證前維持 HTTP（否則 nginx 會因為找不到憑證檔而無法啟動）
+      - ${NGINX_SITE_CONF:-./nginx/conf.d/splitmate.conf}:/etc/nginx/conf.d/splitmate.conf:ro
+      # 憑證（certbot 寫入、nginx 唯讀）
+      - ./certbot/conf:/etc/letsencrypt:ro
+      # HTTP-01 驗證檔（certbot 寫入、nginx 唯讀提供給 Let's Encrypt 讀取）
+      - ./certbot/www:/var/www/certbot:ro
+
+  # 只在申請 / 續期憑證時執行，不會隨 up 啟動（profiles）
+  #   docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm certbot <指令>
+  certbot:
+    image: certbot/certbot:v5.8.0
+    profiles: ["certbot"]
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
