@@ -1,6 +1,7 @@
 package com.splitmate.service;
 
 import com.splitmate.dto.CreateExpenseRequest;
+import com.splitmate.dto.ExpensePageResponse;
 import com.splitmate.dto.ExpenseResponse;
 import com.splitmate.exception.BusinessException;
 import com.splitmate.exception.ErrorCode;
@@ -61,6 +62,23 @@ public class ExpenseService {
      */
     @Transactional
     public ExpenseResponse attachReceipt(Long groupId, Long expenseId, MultipartFile receiptFile, Long currentUserId) {
+        // TODO 練習項目：實作完成後移除下面這行
+        throw new BusinessException(ErrorCode.NOT_IMPLEMENTED);
+    }
+
+    /**
+     * 支出的 cursor 分頁（第二階段練習 11，規格見 practice-guide/11-vue-large-dataset.md）。
+     *
+     * <p>TODO 實作提示：
+     * <ol>
+     *   <li>cursor 需要能唯一定位「上一頁最後一筆」：只用 createdAt 夠嗎？兩筆同時間的支出怎麼辦？</li>
+     *   <li>JOIN FETCH 集合（shares）時不能直接分頁：先查出本頁的 ID，再依 ID 一次載入明細</li>
+     *   <li>如何不額外 COUNT 就知道「還有沒有下一頁」？（提示：多查一筆）</li>
+     *   <li>cursor 對前端是不透明字串；被竄改或格式錯誤時要回 400，而不是 500</li>
+     * </ol>
+     */
+    @Transactional(readOnly = true)
+    public ExpensePageResponse getGroupExpensePage(Long groupId, int pageSize, String cursor, Long currentUserId) {
         // TODO 練習項目：實作完成後移除下面這行
         throw new BusinessException(ErrorCode.NOT_IMPLEMENTED);
     }

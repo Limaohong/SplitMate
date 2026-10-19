@@ -31,6 +31,7 @@
 | 支出清單（唯讀） | ✅ 完成 |
 | 結算：每位成員淨額 + 轉帳建議 | ✅ 完成 |
 | 新增支出、收據上傳、即時通知 | 🧩 練習項目（骨架與規格已備妥，見 [PRACTICE.md](PRACTICE.md)） |
+| 支出分頁、檢視收據（X-Accel-Redirect） | 🧩 第二階段練習項目（後端骨架與驗收測試 `Phase2AcceptanceTest` 已備妥） |
 
 ## 技術版本
 
@@ -190,6 +191,13 @@ docker compose exec postgres psql -U splitmate -d splitmate -f /tmp/seed-demo-da
 - 重複執行是安全的，不會重複建立。
 - **只用於本機**：這些帳號的密碼是公開的，請勿在正式環境執行。
 
+**大量資料（第二階段效能練習用）**：在上面的範例資料之後執行，會建立一個有 5,000 筆支出的群組（邀請連結 `/join/demo-large-dataset`）：
+
+```bash
+docker compose cp scripts/seed-large-dataset.sql postgres:/tmp/seed-large-dataset.sql
+docker compose exec postgres psql -U splitmate -d splitmate -f /tmp/seed-large-dataset.sql
+```
+
 ## 測試
 
 ```bash
@@ -204,7 +212,7 @@ cd backend
   - 支出清單與結算
   - WebSocket 驗證與訂閱權限
   - 結算演算法單元測試（含隨機資料的性質測試）
-- 練習項目的驗收測試 `PracticeAcceptanceTest` 預設標記為 `@Disabled`，使用方式見 [PRACTICE.md](PRACTICE.md)。
+- 練習項目的驗收測試 `PracticeAcceptanceTest`（第一階段）與 `Phase2AcceptanceTest`（第二階段）預設標記為 `@Disabled`，使用方式見 [PRACTICE.md](PRACTICE.md)。
 
 前端型別檢查與建置：
 
@@ -248,6 +256,8 @@ npm run build        # 包含 vue-tsc 型別檢查
 | POST | `/api/groups/{groupId}/expenses` | 🧩 新增支出（練習） |
 | POST | `/api/groups/{groupId}/expenses/{expenseId}/receipt` | 🧩 上傳收據（練習） |
 | WS | `/ws`（STOMP） | 🧩 即時通知（練習，連線驗證已完成） |
+| GET | `/api/groups/{groupId}/expenses/paged?size=&cursor=` | 🧩 支出 cursor 分頁（第二階段練習） |
+| GET | `/api/groups/{groupId}/expenses/{expenseId}/receipt` | 🧩 檢視收據，交由 nginx 以 X-Accel-Redirect 傳檔（第二階段練習） |
 
 ## VPS 部署
 

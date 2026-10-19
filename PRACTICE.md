@@ -345,3 +345,18 @@ docker compose exec nginx nginx -t    # 檢查設定語法
 - **HSTS**：在 HTTPS 設定加上 `Strict-Transport-Security`
   - 留意 `nginx/snippets/splitmate-locations.conf` 底部提到的 `add_header` 繼承陷阱
 - **圖片壓縮**：上傳前在前端用 canvas 把大照片縮到 1600px 以內，減少上傳時間與儲存空間
+
+---
+
+## 8. 第二階段（進階）
+
+第一階段完成後，可以繼續進行第二階段：Vue 的效能、元件架構、大量資料、測試、進階內建元件，以及 Nginx 的 location / rewrite、安全與限流、受保護檔案、負載平衡、觀測與排查。
+
+完整規格放在個人練習手冊 `practice-guide/`（不進版控），專案中已備妥的部分：
+
+| 項目 | 位置 |
+|---|---|
+| 支出 cursor 分頁 API 骨架 | `ExpenseController.getGroupExpensePage`、`ExpenseService.getGroupExpensePage`、`dto/ExpensePageResponse` |
+| 檢視收據 API 骨架 | `ExpenseController.getReceipt` |
+| 驗收測試 | `backend/src/test/java/com/splitmate/practice/Phase2AcceptanceTest.java`（9 個） |
+| 大量資料 | `scripts/seed-large-dataset.sql`（5,000 筆支出） |
